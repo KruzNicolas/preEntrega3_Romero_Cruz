@@ -78,6 +78,7 @@ router.post("/login", async (req, res) => {
           firstName: searchUserBaseData.firstName,
           lastName: searchUserBaseData.lastName,
           role: searchUserBaseData.role,
+          email: searchUserBaseData.email,
           image: "/static/image/KurumiSombra.jpg",
         };
         res.status(200).send({ Status: "OK", data: "User loged" });
@@ -87,6 +88,7 @@ router.post("/login", async (req, res) => {
           firstName: searchUserBaseData.firstName,
           lastName: searchUserBaseData.lastName,
           role: searchUserBaseData.role,
+          email: searchUserBaseData.email,
         };
         res.status(200).send({ Status: "OK", data: "User loged" });
       }

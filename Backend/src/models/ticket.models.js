@@ -8,7 +8,7 @@ const collection = "tickets";
 const schema = new mongoose.Schema(
   {
     code: { type: String, default: uuidv4 },
-    purchaseDatetime: { type: Date, required: true },
+    purchaseDatetime: { type: String, required: true },
     amout: { type: Number, required: true },
     purchaser: { type: String, required: true },
   },

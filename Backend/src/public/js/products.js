@@ -12,7 +12,6 @@ async function getProducts() {
 
 async function addToCart(productId) {
   try {
-    console.log(productId);
     const cartId = "65bb5eb425ceca4e19909e9a"; // Puedes ajustar el ID del carrito según tus necesidades
     const response = await fetch(
       `http://localhost:8080/api/carts/${cartId}/products/${productId}`,

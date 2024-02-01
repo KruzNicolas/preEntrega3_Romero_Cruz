@@ -9,9 +9,9 @@
 
 - ✅ Fix add product to cart
 - ✅ Delete: 'api/carts/:cid/products/:pid' to delete a product from a cart
-- ❌ Put: 'api/carts/:cid' to update a cart with array of product
-- ❌ Put: 'api/carts/:cid/products/:pid' to update the quantity of a product
-- ❌ Delete: 'api/carts/:cid' to delete all products from the cart
+- ✅ Put: 'api/carts/:cid' to update a cart with array of product
+- ✅ Put: 'api/carts/:cid/products/:pid' to update the quantity of a product
+- ✅ Delete: 'api/carts/:cid' to delete all products from the cart
 - [Description](https://docs.google.com/presentation/d/1WD5avt6wb6PK21igJ4e1Lp5falWfsSxfj0bn6AckUQ0/edit#slide=id.g155a4ff4588_0_970)
 
 ##### Authorization Middleware
@@ -28,7 +28,7 @@
 
 ##### Complete the purchase
 
-- ❌ Create '/:cid/purchase' in carts.model to complete the purchase
+- ✅ Create '/:cid/purchase' in carts.model to complete the purchase
 - [Description](https://docs.google.com/presentation/d/19cqF31ZyOaQ2kEX767So1czoLkIO3NxCwnBQby4yflk/edit#slide=id.g14dcab22084_0_186)
 
 ### Frontend
