@@ -1,70 +1,91 @@
+import { Router } from "express";
+import mongoose, { mongo } from "mongoose";
+import cartsModel from "../models/carts.models.js";
+import productsModel from "../models/products.models.js";
 
-import { Router } from "express"
-import mongoose, { mongo } from 'mongoose'
-import cartsModel from "../models/carts.models.js"
-import productsModel from "../models/products.models.js"
+import { handlePolicies } from "../utils.js";
 
-const router = Router()
+const router = Router();
 
-class Carts{
-    static carts = []
+class Carts {
+  static carts = [];
 
-    constructor(){
-        this.products = []
-    }
+  constructor() {
+    this.products = [];
+  }
 }
 
+router.post("/", async (req, res) => {
+  try {
+    const newCart = new Carts();
+    const newCardDb = await cartsModel.create(newCart);
 
-router.post('/', async (req, res) => {
+    res.status(200).send(`Su carrito con ID:${newCardDb._id} ha sido creado`);
+  } catch (err) {
+    res.status(400).send({ status: "ERR", data: err.message });
+  }
+});
+
+router.get("/:cid", async (req, res) => {
+  try {
+    const cId = req.params.cid;
+    const cart = await cartsModel
+      .findOne({ _id: cId })
+      .populate({ path: "products", model: productsModel })
+      .lean();
+    res.status(200).send(cart);
+  } catch (err) {
+    res.status(400).send({ status: "ERR", data: err.message });
+  }
+});
+
+router.post(
+  "/:cid/products/:pid",
+  handlePolicies(["USER"]),
+  async (req, res) => {
     try {
-        const newCart = new Carts()
-        const newCardDb = await cartsModel.create(newCart)
+      const cartId = req.params.cid;
+      const productId = req.params.pid;
 
-        res.status(200).send(`Su carrito con ID:${newCardDb._id} ha sido creado`)
-        } catch (err){
-             res.status(400).send(err.message)
-        } 
-})
+      const productIdObj = new mongoose.Types.ObjectId(productId);
 
-router.get('/:cid', async (req, res) => {
-    try {
-        const cId = req.params.cid
-        const cart = await cartsModel.findOne({ _id: cId}).populate({ path: 'products', model: productsModel}).lean()
-        res.status(200).send(cart)
-      } catch (err) {
-        res.status(400).send(err.message)
+      const cart = await cartsModel.findOne({ _id: cartId });
+
+      if (
+        cart.products.some((product) => product.productId.equals(productIdObj))
+      ) {
+        await cartsModel.updateOne(
+          { _id: cartId, "products.productId": productIdObj },
+          { $inc: { "products.$.quantity": 1 } }
+        );
+      } else {
+        await cartsModel.updateOne(
+          { _id: cartId },
+          { $push: { products: { productId: productIdObj, quantity: 1 } } }
+        );
       }
-})
 
-router.post('/:cid/products/:pid', async (req, res) => {
-    try {
+      res.status(200).send(`Se agrego el producto con id: ${productIdObj}`);
+    } catch (err) {
+      res.status(400).send({ status: "ERR", data: err.message });
+    }
+  }
+);
 
-        const cartId = req.params.cid
-        const productId = req.params.pid
+router.delete("/:cid/products/:pid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
 
-        const productIdObj = new mongoose.Types.ObjectId(productId)
+    await cartsModel.updateOne(
+      { _id: cartId },
+      { $pull: { products: { productId: productId } } }
+    );
 
-        //const cart = await cartsModel.findOne({ _id: cartId})
- 
-        await cartsModel.findOneAndUpdate({ _id: cartId}, {products: productIdObj, quantity: 2})
-        res.status(200).send(`Se agrego el producto con id: ${productIdObj}`)
+    res.status(200).send({ status: "OK", data: "Product removed from cart" });
+  } catch (err) {
+    res.status(400).send({ status: "ERR", data: err.message });
+  }
+});
 
-        /* const productIdSearch = cart.products.some((product) => {
-            return product.id === productId
-        })
-
-        if(productIdSearch){
-            await cartsModel.findOneAndUpdate({ _id: cartId, 'products.id': productIdObj }, { $inc: { 'products.$.quantity': 1 } })
-            res.status(200).send(`Se añadio stock en 1 al producto con ID:${productIdObj}`)
-        } else{
-            await cartsModel.findOneAndUpdate({ _id: cartId}, {$addToSet: {products: {id: productIdObj, quantity: 1}}})
-            res.status(200).send(`Se agrego el producto con id: ${productIdObj}`)
-        } */
-
-        
-        } catch (err){
-            res.status(400).send(err.message)
-        } 
-})
-
-export default router
+export default router;

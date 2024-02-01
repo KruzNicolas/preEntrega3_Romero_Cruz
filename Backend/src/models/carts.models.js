@@ -1,22 +1,28 @@
+import mongoose, { mongo } from "mongoose";
 
-import mongoose, { mongo } from 'mongoose'
+mongoose.pluralize(null);
 
-mongoose.pluralize(null)
+const collection = "carts";
 
-const collection = 'carts'
-
-const schema = new mongoose.Schema({
+const schema = new mongoose.Schema(
+  {
     // products: [ productId:{ type: mongoose.Schema.Types.ObjectId, ref:'products'}, quantity:{ type: Number, default: 1}, _id: {require: false}],
-    products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'products'}, { quantity: { type: Number, default: 1 } }],
+    products: [
+      {
+        _id: false,
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: "products" },
+        quantity: { type: Number, default: 1 },
+      },
+    ],
     // products: { type: [mongoose.Schema.Types.ObjectId], ref:'products'},
     // products: [ {productId: {type: String, require: true}, quantity: {type: Number, default: 1}}],
     //total: {type: Number, require: true}
-    },
-    {
-    versionKey: false
-    
-})
+  },
+  {
+    versionKey: false,
+  }
+);
 
-const model = mongoose.model(collection, schema)
+const model = mongoose.model(collection, schema);
 
-export default model
+export default model;
